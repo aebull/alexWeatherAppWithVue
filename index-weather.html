@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="css/custom.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/weather-icons.min.css">
+	<title>Weather Forecasting</title>
+</head>
+<body>
+
+	<!-- Parent Div Begins -->
+	<div class="parent" id="app" v-if="weather">
+
+		<!-- Weather UI HTML -->
+		<div class="weather-widget">
+		  <div class="weather-icon row">
+		    <i class="wi wi-day-sunny" id="icon1"></i>
+		  </div>
+		  <h1 class="temp-c row">{{weather.data.daily[0].temp.day}}</h1>
+		  <h5 class="condition row">{{weather.data.daily[0].weather[0].description}}</h5>
+			<img alt="" v-bind:src="icons[0]">
+		  <h3 class="location-name row">Wellington</h3>
+		  <h5 class="location-country row">New Zealand</h5>
+			<h4 style= "text-align: center;" class="today">{{getTheDay(0)}}</h4>
+		</div>
+		<div class="weather-forecast">
+
+		  <div class="forecast-item">
+		    <div class="day">
+		      <h4>{{getTheDay(1)}}</h4>
+		      <h6>{{dates[1]}}</h6>
+		    </div>
+		    <div class="forecast">
+		      <i class="wi wi-night-sleet"></i> {{weather.data.daily[1].temp.day}}
+		      <h6>Partly Cloudy</h6>
+					<img alt="" v-bind:src="icons[0]">
+		    </div>
+		  </div>
+
+		  <div class="forecast-item">
+		    <div class="day">
+		      <h4>{{getTheDay(2)}}</h4>
+		      <h6>{{dates[2]}}</h6>
+		    </div>
+		    <div class="forecast">
+		      <i class="wi wi-night-sleet"></i> {{weather.data.daily[2].temp.day}}
+		      <h6>Partly Cloudy</h6>
+					<img alt="" v-bind:src="icons[1]">
+		    </div>
+		  </div>
+
+		  <div class="forecast-item">
+		    <div class="day">
+		      <h4>{{getTheDay(3)}}</h4>
+		      <h6>{{dates[3]}}</h6>
+		    </div>
+		    <div class="forecast">
+		      <i class="wi wi-day-thunderstorm"></i> {{weather.data.daily[3].temp.day}}
+		      <h6>thunderstorms</h6>
+					<img alt="" v-bind:src="icons[2]">
+		    </div>
+		  </div>
+
+		  <div class="forecast-item">
+		    <div class="day">
+		      <h4>{{getTheDay(-3)}}</h4>
+		      <h6>{{dates[4]}}</h6>
+		    </div>
+		    <div class="forecast">
+		      <i class="wi wi-day-sunny"></i> {{weather.data.daily[4].temp.day}}
+		      <h6>Sunny</h6>
+					<img alt="" v-bind:src="icons[3]">
+		    </div>
+		  </div>
+
+		  <div class="forecast-item">
+		    <div class="day">
+		      <h4>{{getTheDay(-2)}}</h4>
+		      <h6>{{dates[5]}}</h6>
+		    </div>
+		    <div class="forecast">
+		      <i class="wi wi-night-sleet"></i> {{weather.data.daily[5].temp.day}}
+		      <h6>Partly Cloudy</h6>
+					<img alt="" v-bind:src="icons[4]">
+		    </div>
+		  </div>
+
+		  <div class="forecast-item">
+		    <div class="day">
+		      <h4>{{getTheDay(-1)}}</h4>
+		      <h6>{{dates[6]}}</h6>
+		    </div>
+		    <div class="forecast">
+		      <i class="wi wi-night-sleet"></i> {{weather.data.daily[6].temp.day}}
+		      <h6>Partly Cloudy</h6>
+					<img alt="" v-bind:src="icons[5]">
+		    </div>
+		  </div>
+
+		  <div class="forecast-item">
+		    <div class="day">
+		      <h4>{{getTheDay(0)}}</h4>
+		      <h6>{{dates[7]}}</h6>
+		    </div>
+		    <div class="forecast">
+		      <i class="wi wi-night-sleet"></i> {{weather.data.daily[7].temp.day}}
+		      <h6>Partly Cloudy</h6>
+					<img alt="" v-bind:src="icons[6]">
+		    </div>
+		  </div>
+
+		  <div class="forecast-item">
+		    <div class="day">
+		      <h4>{{getTheDay(1)}}</h4>
+		      <h6>{{dates[8]}}</h6>
+		    </div>
+		    <div class="forecast">
+		      <i class="wi wi-night-sleet"></i> {{weather.data.daily[7].temp.day}}
+		      <h6>Partly Cloudy</h6>
+					<img alt="" v-bind:src="icons[7]">
+		    </div>
+		  </div>
+
+		</div>
+	<!-- WeatherUI HTML ENDS -->
+  </div>
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+	<script>
+	(function(){
+	// v-if="weather" on line 13 will conditionally render the entire
+	// application after the ajax response, as it will change 'weather: false'
+	// to true (as data is seen as true by the computer logic).
+	 var app = new Vue({
+		  el: '#app',
+		  data: {
+				// Start the vue app with weather assigned as false
+				weather: false,
+				dates: '',
+				daysOf: ['Monday' , 'Tuesday'],
+
+				icons: false
+
+
+		  },
+				created: function (){
+    		this.createDates();
+			},
+
+			methods:{
+				getTheDay: function(indexAddition){
+					var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+					var date = new Date();
+					var currentDay = date.getDay();
+					var finalRef = currentDay + indexAddition;
+					return days[finalRef]
+				},
+
+				createDates: function(){
+					var dates = [];
+					var daysRequired = 9
+					for (var i = 0; i <= daysRequired; i++) {
+					  dates.push(moment().add(i,'days').format('dddd, Do MMMM YYYY'))
+					}
+					this.dates = dates;
+					console.log(this.dates);
+
+				},
+
+			}
+		});
+		// The first function call
+ 	 initAndGeoLocation();
+
+ 		// A function that runs after the ajax response
+ 		function initAndGeoLocation() {
+ 			console.log(app.weather)
+
+ 			getLocation();
+ 			function getLocation() {
+ 				  if (navigator.geolocation) {
+ 				    navigator.geolocation.getCurrentPosition(showPosition);
+ 				  } else {
+ 				    console.log('not working');
+ 				  }
+ 				}
+
+ 			function showPosition(position) {
+ 			 console.log(position.coords.latitude);
+ 			 console.log(position.coords.longitude);
+
+ 			 // We have a function pre-written that makes an ajax request
+ 	 		 makeAjaxRequest(position.coords.latitude, position.coords.longitude);
+ 			}
+
+ 		} // getStarted ENDS
+
+ 		// Make Ajax Request Start
+ 		 function makeAjaxRequest (lon, lat) {
+
+ 	    // GET request for remote image in node.js
+ 	    axios({
+ 	      method: 'get',
+ 	      url: 'https://api.openweathermap.org/data/2.5/onecall?lat=' + lon + '&lon=' + lat + '&units=metric&exclude=hourly,minute&appid=12482d514685771cdc94139a8fc2e8da'
+ 	    }).then(function (response) {
+ 				// Here we assign the the data response to the app/vue weather property.
+ 				// We do not need to use 'data.weather' because vue always provides data
+ 				// as a property by default.
+ 				app.weather = response
+ 				// After the api ajax response is assigned we then call another
+ 				// function to run more code.
+				console.log(response);
+				var icons = [];
+
+				function getIcons(){
+				 for (var i = 0; i < 8; i++) {
+					 console.log(i)
+					 var iconCode = response.data.daily[i].weather[0].icon;
+					 var iconUrl = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
+					 icons.push(iconUrl)
+					 // console.log(iconUrl);
+					 // console.log(icons)
+					 }
+					 console.log(icons);
+					 app.icons = icons
+				 } // getIcons Ends
+				 getIcons();
+ 	    });
+ 	  } // makeAjaxRequest ENDS
+
+
+
+ 	}()); // iffe function ENDS
+	</script>
+</body>
+</html>
